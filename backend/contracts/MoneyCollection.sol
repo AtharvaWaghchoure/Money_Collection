@@ -61,14 +61,6 @@ contract MoneyCollection {
         _;
     }
 
-    function setGovernmentAddresses(address _stateGovernment, address _district)
-        external
-        onlyCentralGovernment
-    {
-        stateGovernment = _stateGovernment;
-        district = _district;
-    }
-
     function setStateGovernment(address _stateGovernment)
         external
         onlyCentralGovernment
