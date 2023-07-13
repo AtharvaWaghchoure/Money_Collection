@@ -7,12 +7,12 @@ contract contractor{
     // mapping(string => uint256) public reqirementsToAmount;
     string[] public works;
     uint256[] public amounts;
-    uint256 totalPairsInMapping;
+    // uint256 totalPairsInMapping;
 
     function addWork(string memory work, uint256 amount) public {
         works.push(work);
         amounts.push(amount);
-        totalPairsInMapping++;
+        // totalPairsInMapping++;
     }
 
     // function requestToState() public returns(string memory, uint256){
