@@ -90,14 +90,39 @@ contract MoneyCollection {
         roadTransportContractor = _roadTransportContractor;
     }
 
-    // Example function to simulate tax collection
-    function collectTax(uint256 amount) external onlyCentralGovernment {
+    function fundTransfer() external onlyCentralGovernment {
         // Send the tax amount to the state government
-        // stateGovernment.transfer(amount);
-        // Note: The above line is deprecated in newer versions of Solidity. You can use a more secure approach like using the Withdraw Pattern or a library like OpenZeppelin's SafeERC20.
+        uint256 amount = address(this).balance;
+        require(amount > 0, "Amount must be than zero.");
+        (bool success, ) = district.call{value: amount}("");
+        require(success, "Transfer to State Government failed.");
     }
 
-    // Implement other functions as per your requirements
+    function distributeFunds() external onlyDistrict {
+        uint256 balance = address(district).balance;
+        require(balance > 0, "No funds available for distribution");
 
-    // Remember to add proper access control mechanisms to ensure only authorized parties can call specific functions.
+        uint256 amountPerRecipient = balance / 3;
+
+        // Transfer funds to MLA's
+        (bool success, ) = mlaContractor.call{value: amountPerRecipient}("");
+        require(success, "Transfer to MLA's failed.");
+
+        // Transfer funds to Health Care Sector
+        (success, ) = healthcareContractor.call{value: amountPerRecipient}("");
+        require(success, "Transfer to Health Care sector failed.");
+
+        // Transfer funds to Road & Transport Ministry
+        (success, ) = roadTransportContractor.call{value: amountPerRecipient}(
+            ""
+        );
+        require(success, "Transfer to MLA's failed.");
+
+        // Deposit remaining funds back into the district
+        uint256 remainingBalance = address(district).balance;
+        if (remainingBalance > 0) {
+            (success, ) = district.call{value: remainingBalance}("");
+            require(success, "Deposit remaining funds into district failed.");
+        }
+    }
 }
